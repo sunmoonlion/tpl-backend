@@ -105,7 +105,14 @@ EOF
   wait_k8s_pods_ready
 
   if redis_use_k8s_client; then
-    local pod_name="dbctl-redis-provision-${SERVICE_NAME:-app}-$(date +%s)"
+    local pod_suffix
+    pod_suffix="$(date +%s)"
+    local pod_prefix="dbctl-redis-provision-"
+    local pod_service="${SERVICE_NAME:-app}"
+    local max_service_len=$((63 - ${#pod_prefix} - ${#pod_suffix} - 1))
+    pod_service="${pod_service:0:${max_service_len}}"
+    pod_service="${pod_service%-}"
+    local pod_name="${pod_prefix}${pod_service}-${pod_suffix}"
     redis_run_k8s_client "${pod_name}" <<EOF
 key_spec='${key_spec}'
 key_sep='${key_sep}'
