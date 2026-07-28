@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlsplit
 
 import httpx
 import pytest
@@ -81,6 +81,19 @@ def _client(encoded: str, key: RSAKey) -> OidcProviderClient:
         raise AssertionError(f"unexpected request: {request.url}")
 
     return OidcProviderClient(_settings(), transport=httpx.MockTransport(handler))
+
+
+@pytest.mark.asyncio
+async def test_authorization_requests_the_canonical_admin_scope() -> None:
+    key = RSAKey.generate_key(parameters={"kid": "test-key"})
+    authorization_url = await _client(_token(key), key).build_authorization_url(
+        state="state-123",
+        nonce="nonce-123",
+        code_challenge="challenge-123",
+    )
+
+    query = parse_qs(urlsplit(authorization_url).query)
+    assert query["scope"] == ["openid profile email tpl:admin"]
 
 
 @pytest.mark.asyncio

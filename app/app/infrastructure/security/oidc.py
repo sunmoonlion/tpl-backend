@@ -195,7 +195,10 @@ class OidcProviderClient:
                 "response_type": "code",
                 "client_id": self._settings.casdoor_client_id,
                 "redirect_uri": self._settings.casdoor_redirect_uri,
-                "scope": "openid profile email",
+                "scope": (
+                    f"openid profile email "
+                    f"{self._settings.required_admin_scope}"
+                ),
                 "state": state,
                 "nonce": nonce,
                 "code_challenge": code_challenge,
