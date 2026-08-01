@@ -1,7 +1,7 @@
 [project]
-name = "tpl-admin-backend"
-version = "0.2.0"
-description = "通用后台管理 API 服务模板"
+name = "tpl-backend"
+version = "2.0.0.dev0"
+description = "Admin 与 Web 共用的生产级 FastAPI 后端模板"
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.16.0",
@@ -43,12 +43,13 @@ reportMissingImports = true
 reportMissingModuleSource = false
 reportOptionalMemberAccess = true
 reportAttributeAccessIssue = true
-include = ["app", "core", "app/tasks"]
+include = ["app", "core"]
 exclude = ["alembic"]
 
 [tool.ruff]
 target-version = "py312"
 line-length = 88
+exclude = ["alembic/versions"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "ASYNC"]
