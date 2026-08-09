@@ -3,8 +3,8 @@
 
 set -e
 
-IMAGE_NAME="tpl-admin-backend:1.0.0"
-CONTAINER_NAME="tpl-admin-backend"
+IMAGE_NAME="tpl-backend:architecture-v2-dev"
+CONTAINER_NAME="tpl-backend"
 
 echo "停止并删除旧容器..."
 docker stop $CONTAINER_NAME 2>/dev/null || true

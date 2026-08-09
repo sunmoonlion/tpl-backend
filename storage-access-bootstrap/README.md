@@ -1,59 +1,9 @@
-# storage-access-bootstrap (admin-backend)
+# storage-access-bootstrap（统一 Backend）
 
-This directory declares and provisions standard S3 access for
-`tpl-admin-backend`.
-
-It is disabled by default. Enable it only when this Backend owns a distinct
-set of object data inside the App domain.
-
-## Configuration
-
-1. Review `config/access.json`.
-2. Set the target Namespace, Bucket names, permissions and versioning.
-3. Set `ENABLE_OBJECT_STORAGE=true` in `config/common.env`.
-4. Override `SUNMOONAI_K8S_ROOT` if the `k8s` repository is not at `~/k8s`.
-
-The declaration contains no credentials. The Data Platform provisioner creates
-an IAM identity and writes these resources to the target Namespace:
-
-```text
-Secret:    tpl-admin-backend-s3
-ConfigMap: tpl-admin-backend-s3
-```
-
-The Backend Deployment should reference both resources with `envFrom`.
-When generating its Kubernetes deployment with `k8s-scaffold`, use:
+为 `tpl-backend` 声明对象存储访问关系。声明文件位于 `config/access.json`，默认生成 `tpl-backend-s3` Secret/ConfigMap。
 
 ```bash
-./k8s-scaffold/scaffold.sh tpl-admin-backend 8001 \
-  --type backend \
-  --with-object-storage
+./storage-access-bootstrap.sh --cluster KIND
 ```
 
-For an existing generated deployment, set these fields in its
-`generate-app.conf`:
-
-```text
-TPL_ADMIN_BACKEND_OBJECT_STORAGE_CONFIGMAP_NAME=tpl-admin-backend-s3
-TPL_ADMIN_BACKEND_OBJECT_STORAGE_SECRET_NAME=tpl-admin-backend-s3
-```
-
-## Commands
-
-```bash
-./storage-access-bootstrap.sh validate
-./storage-access-bootstrap.sh provision
-./storage-access-bootstrap.sh status
-./storage-access-bootstrap.sh rotate
-./storage-access-bootstrap.sh teardown
-```
-
-Convenience wrappers:
-
-```bash
-./setup-k8s-storage-access.sh
-./teardown-k8s-storage-access.sh
-```
-
-`teardown` removes the IAM identity, Policy, Secret and ConfigMap. Bucket data
-is retained.
+实例化后必须把 app、backend、资源名和 bucket 名替换为实例身份；Secret 只授予实际需要对象存储的运行角色。业务数据继续遵循唯一写入方原则。

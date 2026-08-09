@@ -1,6 +1,6 @@
 # db-provisioner
 
-> **维护**：本目录位于 **tpl-admin-backend** 内，为该 backend 配套 **`db-access-bootstrap` 的唯一 `dbctl` 来源**；与独立 `k8s` 仓库无联动。将 admin 仓库单独迁出时请一并带走本目录。
+> **维护**：本目录位于 **tpl-backend** 内，为统一 Backend 配套 **`db-access-bootstrap` 的唯一 `dbctl` 来源**；与独立 `k8s` 仓库无联动。迁移 Backend 仓库时请一并带走本目录。
 
 统一数据库开通工具（`mongodb` / `postgresql` / `redis`），支持：
 
