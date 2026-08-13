@@ -39,7 +39,7 @@ uv run python -m app.bootstrap.worker
 
 ## Kubernetes 验收
 
-`k8s-scaffold-v2` 生成 API、Worker、Scheduler 和 Migration 资源。验收必须确认：
+`k8s-deployment` 生成 API、Worker、Scheduler 和 Migration 资源。验收必须确认：
 
 1. 四种角色引用同一个不可变镜像 digest；
 2. API、Worker、Scheduler 的 ServiceAccount 不相同；
