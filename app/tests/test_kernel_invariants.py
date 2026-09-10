@@ -45,6 +45,7 @@ def test_one_linear_canonical_migration_chain() -> None:
     assert [path.name for path in revisions] == [
         "20260726_0001_auth_identity.py",
         "20260801_0002_outbox_primitives.py",
+        "20260911_0003_durable_delivery.py",
     ]
     contents = [path.read_text() for path in revisions]
     assert sum("down_revision = None" in content for content in contents) == 1

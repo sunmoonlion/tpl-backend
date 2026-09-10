@@ -94,16 +94,7 @@ DORMANT: tuple[Dormant, ...] = (
             for d in _domain_dirs()
         ),
     ),
-    Dormant(
-        name="Outbox/Inbox 消费链路",
-        kind="deliberate",
-        evidence="Port、DTO、ORM、SQL 仓库类齐备，application/services 零调用",
-        anchor_exists=lambda: (
-            _exists("app/infrastructure/repositories/outbox.py")
-            and _exists("app/application/ports/outbox.py")
-        ),
-        still_dormant=lambda: not _shared_outbox_used_by_services(),
-    ),
+
     Dormant(
         name="web-interaction 运行时",
         kind="deliberate",
@@ -126,18 +117,7 @@ DORMANT: tuple[Dormant, ...] = (
         # 对 routes.py 做文本匹配会漏掉，判据会假性通过。
         still_dormant=lambda: not _mounted_paths("/api/internal"),
     ),
-    Dormant(
-        name="Celery 周期任务",
-        kind="deliberate",
-        evidence="Scheduler 是四个运行角色之一，但全仓无 beat_schedule 定义",
-        anchor_exists=lambda: _exists("app/bootstrap/scheduler.py"),
-        still_dormant=lambda: (
-            not any(
-                "beat_schedule" in p.read_text(encoding="utf-8")
-                for p in (ROOT / "app").rglob("*.py")
-            )
-        ),
-    ),
+
 )
 
 
