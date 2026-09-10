@@ -46,11 +46,15 @@ async def db():
     schema = "delivery_test_" + uuid.uuid4().hex
     engine = create_async_engine(
         parsed.set(drivername="postgresql+asyncpg"),
-        connect_args={"server_settings": {"search_path": schema}},
+        connect_args={"server_settings": {"search_path": schema + ",public"}},
     )
     try:
         async with engine.begin() as c:
             await c.execute(text(f'CREATE SCHEMA "{schema}"'))
+            # Match database provisioning: older domain migrations use uuid-ossp.
+            await c.execute(
+                text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public')
+            )
             await c.run_sync(migrate)
             await c.execute(
                 text(
