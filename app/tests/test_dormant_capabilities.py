@@ -108,17 +108,14 @@ DORMANT: tuple[Dormant, ...] = (
             in _read("app/application/services/web_interaction.py")
         ),
     ),
-    Dormant(
-        name="/api/internal/v1 入站面",
-        kind="deliberate",
-        evidence="中间件在，但没有任何 router 挂到该前缀",
-        anchor_exists=lambda: _exists("app/interfaces/http/routes.py"),
-        # 必须查**真实路由表**：前缀写在被引入的 endpoints 模块里，
-        # 对 routes.py 做文本匹配会漏掉，判据会假性通过。
-        still_dormant=lambda: not _mounted_paths("/api/internal"),
-    ),
 
 )
+
+
+def test_delivery_metrics_internal_surface_is_now_wired() -> None:
+    # B7h activated this capability. Signed identity and rejection tests live in
+    # test_delivery_metrics_http.py; it must no longer be declared dormant.
+    assert "/api/internal/v1/delivery/metrics" in _mounted_paths("/api/internal")
 
 
 @pytest.mark.parametrize("item", DORMANT, ids=lambda i: i.name)
