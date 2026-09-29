@@ -9,6 +9,8 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from pydantic import AliasChoices, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.domain.cross_app import Source, Target, parse_sources, parse_targets
+
 BrowserSurface = Literal["admin", "web"]
 
 
@@ -43,6 +45,15 @@ class Settings(BaseSettings):
     service_name: str = "tpl-backend"
     deployment_id: str = "local"
     app_slug: str = "tpl"
+
+    # 跨应用跳转（app/domain/cross_app.py）。都可不配：不配就是不带人来、也不带人去。
+    # 哪些应用可以把用户带到这里，各自的回跳地址。回跳地址只从这里取，从不从链接里取。
+    #   {"investment": {"return_url": "https://…/zh-CN/workbench?ref={ref}"},
+    #    "knowledge": {}}
+    cross_app_sources_json: str = "{}"
+    # 这个应用会把用户带去哪些应用，各自网页端的地址。
+    #   {"info": {"web_base_url": "https://info.example"}}
+    cross_app_targets_json: str = "{}"
 
     database_url: str = "postgresql+asyncpg://tpl:tpl@localhost:5432/tpl"
     migration_database_url: str | None = None
@@ -128,6 +139,24 @@ class Settings(BaseSettings):
     celery_task_topology_predeclared: bool = Field(
         default=False, validation_alias="CELERY_TASK_TOPOLOGY_PREDECLARED"
     )
+
+    @field_validator("cross_app_sources_json")
+    @classmethod
+    def _validate_cross_app_sources(cls, value: str) -> str:
+        parse_sources(value)
+        return value
+
+    @field_validator("cross_app_targets_json")
+    @classmethod
+    def _validate_cross_app_targets(cls, value: str) -> str:
+        parse_targets(value)
+        return value
+
+    def cross_app_sources(self) -> dict[str, Source]:
+        return parse_sources(self.cross_app_sources_json)
+
+    def cross_app_targets(self) -> dict[str, Target]:
+        return parse_targets(self.cross_app_targets_json)
 
     @field_validator("database_url", "migration_database_url", mode="before")
     @classmethod

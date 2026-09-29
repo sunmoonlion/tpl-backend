@@ -87,6 +87,21 @@ uv run lint-imports
 要用数据库或外部服务：先在 `app/application/ports/` 写接口，实现放 `app/infrastructure/`，
 在 `app/bootstrap/` 里接上。不要往 `ignore_imports` 里加新的条目——那是旧账的放行清单，只减不增。
 
+## 跨应用跳转
+
+一个应用把用户带到另一个应用的某个页面，只有一种做法。规则在 `app/app/domain/cross_app.py`。
+
+| 项 | 约定 |
+| --- | --- |
+| 形式 | 普通链接，新标签页 |
+| 链接里带 | 业务参数、`from`（从哪个应用来）、`ref`（来处的引用） |
+| 链接里不带 | 身份、令牌、回去的地址 |
+| 回去的地址 | 目标应用按 `from` 在自己的配置里查，把 `ref` 填进去。从不从链接里取 |
+| 链接带来的参数 | 不可信。不认识的应用、不合规则的引用当作没带，不报错 |
+| 配置 | `CROSS_APP_SOURCES_JSON`（谁可以带人来、各自的回跳地址）、`CROSS_APP_TARGETS_JSON`（带人去哪、各自网页端的地址）。都可不配 |
+| 接口 | `GET /api/web/v1/cross-app/links`、`GET /api/web/v1/cross-app/origin?from=&ref=` |
+| 拼链接 | 只在网页端的一处拼。后端不拼去别的应用的链接 |
+
 ## 动手前
 
 1. 读 `app/interfaces/endpoints/` 与 `app/interfaces/http/` 确认现有路由
