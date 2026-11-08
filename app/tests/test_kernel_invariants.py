@@ -46,6 +46,7 @@ def test_one_linear_canonical_migration_chain() -> None:
         "20260726_0001_auth_identity.py",
         "20260801_0002_outbox_primitives.py",
         "20260911_0003_durable_delivery.py",
+        "20261025_0004_auth_user_by_subject.py",
     ]
     contents = [path.read_text() for path in revisions]
     assert sum("down_revision = None" in content for content in contents) == 1
@@ -64,7 +65,8 @@ def test_package_version_matches_the_formal_release() -> None:
 
     2026-08-13 的 Architecture v2 正式发布采用 exact-digest-alias 晋升：
     不重建镜像，给已通过 R7 门禁的 digest 打 `2.0.0` 别名
-    （历史 R7 发布清单按 k8s:sunmoonai/docs/legacy-backlog/verification-index.md 查询）。
+    （历史 R7 发布清单按
+    k8s:sunmoonai/docs/legacy-backlog/verification-index.md 查询）。
     本测试钉住源码侧的版本字符串，使 `/api/version` 与该别名一致。
 
     本测试的前身 `test_candidate_does_not_claim_the_formal_release` 禁止源码写
